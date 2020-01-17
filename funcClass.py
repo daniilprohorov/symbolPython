@@ -1,4 +1,5 @@
 from exprClass import Expr
+from typing import Dict
 from argsClass import Args
 
 
@@ -7,61 +8,75 @@ class Func:
     list_blocks = None
 
     # аргументы как указатели
-    def __init__(self, list_args: [Args], list_blocks: [Expr], buildIn=False, func=None):
+    def __init__(self, list_args: [[Expr]], list_blocks: [Expr], buildIn=False, func=None):
         self.list_args = list_args
         self.list_blocks = list_blocks
         self.build_in = buildIn
         self.build_in_func = func
 
-    def eval(self, context, argsValues=None):
+        # self.argsDict = {arg: i for args in self.list_args for i, arg in enumerate(args)}
+
+    def eval(self, context, argsValues):
         for args, block in zip(self.list_args, self.list_blocks):
-            indexes = []
-            for i, arg in enumerate(args.args):
-                if arg.isConst:
-                    indexes.append(i)
+            argsValuesList = []
+            const_args = [arg for arg in args if arg.isConst]
+            argsDict = {arg.toString(): i for i, arg in enumerate(args)}
+            # TODO: исправить тут, чтобы нормально все работало, а не бралось только первое при константе
+            for const in const_args:
+                key = argsDict[const.toString()]
+                currentArg = argsValues[key]
+                if currentArg.isConst:
+                    newExpr = Expr()
+                    newExpr.const(currentArg.val)
+                    argsValuesList.append(newExpr)
                 else:
-                    continue
+                    currentArg = currentArg.eval(context, argsDict, argsValues)
+                    if currentArg.isConst:
+                        newExpr = Expr()
+                        newExpr.const(currentArg.val)
+                        argsValuesList.append(newExpr)
+                    else:
+                        print("Pattern match error")
+                        return None
 
-            if indexes:
-                for i in indexes:
-                    argsValues[i] = argsValues[i].eval(context, argsValues)
-
-            if all([args.args[i].val == argsValues[i].val for i in indexes]):
-
-                if self.build_in:
-                    new_args = []
-                    for arg in argsValues:
-                        new_args.append(arg.eval(context, argsValues))
-                    return self.build_in_func(*argsValues)
-
-                if block.isConst:
-                    return block
-                elif block.isSymbol:
-                    # TODO: добавить контекст
-                    symbol = block.symbolVal
-                    for i, arg in enumerate(args.args):
-                        if arg.isSymbol and symbol == arg.symbolVal:
-                            return argsValues[i]
-
-                elif block.isFunction:
-                    return block.eval(context, argsValues)
-
-            else:
+            if [v.val for v in const_args] != [v.val for v in argsValuesList]:
                 continue
+            else:
+                if self.build_in:
+                    # args.update(const_args)
+                    evaledArgs = [v.eval(context, argsDict, argsValues) for v in args]
+                    return self.build_in_func(*evaledArgs)
+                else:
+                    # args.update(const_args)
+                    return block.eval(context, argsDict, argsValues)
+
+    # def changeLabels(self, labels_list):
+    #     newArgs = []
+    #     for labels, block in zip(labels_list, self.list_blocks):
+    #         tmp = dict()
+    #         for (new, tp) in labels:
+    #             tmp2 = Expr()
+    #             if type(new) is str:
+    #                 tmp2.symbol(new)
+    #             elif type(new) is int:
+    #                 tmp2.const(new)
+    #             tmp[new] = tmp2
+    #         newArgs.append(tmp)
+    #         newArgsBlock = []
+    #         for lb in labels:
+    #             newArgsBlock.append(lb)
+
+            block.args = newArgsBlock
+
+            self.list_args = newArgs
 
 
 
-        # if self.block.isConst:
-        #     return self.block.val
-        # elif self.block.isSymbol:
-        #     # TODO: добавить контекст
-        #     symbol = self.block.symbolVal
-        #     for i, arg in enumerate(self.args):
-        #         if arg.isSymbol and symbol == arg.symbolVal:
-        #             return argsValues[i]
-        #
-        # elif self.block.isFunction:
 
-            # for arg in context:
-            #    if symbol == arg.symbolVal:
-            #        return argsValues[i]
+
+
+
+
+
+
+
