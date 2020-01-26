@@ -93,7 +93,8 @@ def preParse(lines):
 
 
 def parse():
-    return preParse(prgList())
+    result = preParse(prgList())
+    return result
 
 lol = parse()
 print(parse())

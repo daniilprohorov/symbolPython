@@ -38,9 +38,17 @@ def neg_func(x):
     new_expr.const(v)
     return new_expr
 
+def print_func(x):
+    s = x.toString()
+    print(s)
+    new_expr = Expr()
+    new_expr.const(0)
+    return new_expr
+
 p = DefFunc()
-p.const("a1", 5)
+p.const("a1", 1)
 p.const("b1", 6)
+p.const("k", 12)
 p.symbol("a", "a")
 p.symbol("b", "b")
 p.const("true", 1)
@@ -49,9 +57,10 @@ p.const("fake", 0)
 p.define("add", [["a", "b"]], ["fake"], True, add_func)
 p.define("mul", [["a", "b"]], ["fake"], True, mul_func)
 p.define("neg", [["a"]], ["fake"], True, neg_func)
+p.define("print", [["a"]], ["fake"], True, print_func)
 p.parseContext()
-lol = p.eval('factorial', ["a1"])
-print("lol")
+lol = p.eval('main')
+print(lol.toString())
 #
 # p.func("sub_neg", "neg", ["b"])
 # p.func("sub_add", "add", ["a", "sub_neg"])

@@ -38,8 +38,8 @@ class DefFunc:
         func = Func(argsExpr, resExpr, buildIn, buildInFunc)
         self.context[key] = func
 
-    def eval(self, funcKey: str, args: [str]):
-        func = self.context[funcKey]
+    def eval(self, key: str, args: [str] = []):
+        func = self.context[key]
         argsExpr = [self.context[arg] for arg in args]
         return func.eval(self.context, argsExpr)
 
@@ -80,6 +80,11 @@ class DefFunc:
         for name in functions:
             body = functions[name]
             argsTextList = body.args
+            # if argsTextList == [[]]:
+            #     blockTextList = body.block
+            #     blocksOut = self.blockToIndex(blockTextList, localArgsDict)
+            #     self.symbol(name, blocksOut[0])
+            # else:
             argsOut = []
             localArgsDict = {}
             for argsText in argsTextList:
@@ -94,14 +99,13 @@ class DefFunc:
                         localArgsDict[argT] = index
                         localArgs.append(index)
                 argsOut.append(localArgs)
-
+            # TODO: исправить тут костыль
             blockTextList = body.block
             blocksOut = self.blockToIndex(blockTextList, localArgsDict)
             self.define(name, argsOut, blocksOut)
 
 
 
-        print("lol")
 
 
 
