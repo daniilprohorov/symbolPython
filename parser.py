@@ -32,14 +32,16 @@ def splitWithBrackets(line):
         elif ch == ')':
             if acc != '':
                 appendLast(bracketsCount, splitedList, acc)
+                bracketsCount -= 1
                 acc = ''
-            if bracketsCount > 0:
+            elif bracketsCount > 0:
                 bracketsCount -= 1
             else:
                 error("Brackets order error")
         elif ch == ' ':
-            appendLast(bracketsCount, splitedList, acc)
-            acc = ""
+            if acc != '':
+                appendLast(bracketsCount, splitedList, acc)
+                acc = ''
         else:
             acc += (ch)
 

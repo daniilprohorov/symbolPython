@@ -1,6 +1,6 @@
 class Expr:
 
-    def __init__(self):
+    def __init__(self, process):
         self.args = None
         self.val = None
         self.symbolVal = None
@@ -8,6 +8,7 @@ class Expr:
         self.isConst = False
         self.isSymbol = False
         self.isFunc = False
+        self.process = process
 
     def const(self, val):
         self.val = val
@@ -35,24 +36,65 @@ class Expr:
                 return self
         elif self.isFunc:
             # вычисляем аргументы, которые strict
-            func = context[self.funcKey]
-            # strict_args = [label for label, p in self.args if p == "strict"]
+            onlyArgsVals = False
+            if self.funcKey in context:
+                func = context[self.funcKey]
+            elif argsValues:
+                onlyArgsVals = True
+            else:
+                return self
+            # TODO: Problem with lazy is here
+
+            # newArgsVals = []
+            # for i, arg in enumerate(self.args):
+            #     index = None
+            #     if arg in argsDict:
+            #         index = argsDict[arg]
+            #         val = argsValues[index]
+            #         newArgsVals.append(val)
+            #     elif arg in context:
+            #         fromContext = context[arg]
+            #         newArgsVals.append(fromContext)
+            #
+            # return func.eval(newArgsVals, self.process)
+
+
+
             newArgsVals = []
             for i, arg in enumerate(self.args):
                 index = None
                 if arg in argsDict:
                     index = argsDict[arg]
-                    evaluated = argsValues[index].eval(context, argsDict, argsValues)
+                    if onlyArgsVals:
+                        evaluated = index
+                    else:
+                        evaluated = argsValues[index].eval(context, argsDict, argsValues)
                     # argsValues[index] = evaluated
                     newArgsVals.append(evaluated)
                     # newArgsVals = [argsValues[argsDict[a]] for a in self.args]
                 elif arg in context:
-                    evaluated = context[arg].eval(context, argsDict, argsValues)
-                    # argsValues[i] = evaluated
+                    fromContext = context[arg]
+                    # local import
+                    from funcClass import Func
+
+                    if isinstance(fromContext, Expr):
+                        if fromContext.funcKey and fromContext.funcKey[0].isupper():
+                            evaluated = fromContext
+                        else:
+                            evaluated = fromContext.eval(context, argsDict, argsValues)
+                    elif isinstance(fromContext, Func):
+                        # evaluated = fromContext.eval(argsValues, self.process)
+                        # evaluated = fromContext
+                        evaluated = argsValues[fromContext].eval(context, argsDict, argsValues)
+
                     newArgsVals.append(evaluated)
                     # newArgsVals = argsValues
 
-            return func.eval(context, newArgsVals)
+            if onlyArgsVals:
+                self.args = newArgsVals
+                return self
+            else:
+                return func.eval(newArgsVals, self.process)
 
     def toString(self):
         if self.isConst:
