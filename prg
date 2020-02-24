@@ -1,21 +1,75 @@
-
+@ factorial Const = Const
 @ factorial 0 = 1
 @ factorial n = mul n (factorial (sub n 1))
 
-@ true = 1
-@ false = 0
-
+@ sub Const Const = Const
 @ sub a b = add a ( neg b )
 
+@ if Const Symbol Symbol = Symbol
 @ if 1 a b = a
 @ if 0 a b = b
 
+@ List Symbol Symbol = Symbol
+@ List a b = a
+
+@ Mul Symbol Symbol = Symbol
+@ Mul a b = a
+
+@ Add Symbol Symbol = Symbol
+@ Add a b = a
+
+@ head Function = Const
+@ head (List a b) = a
+
+@ tail Function = Symbol
+@ tail (List a b) = b
+
+@ lol Symbol Symbol = Function
+@ lol a l = List a l
+
+@ listCreate Symbol = Function
+@ listCreate a = List a 0
+
+
+@ prepend Symbol Symbol = Function
+@ prepend x xs = List x xs
+
+@ headSnd Function = Symbol
+@ headSnd (List a (List b c)) = b
+
+
+@ operation Function = Const
+@ operation (Mul a b) = 5
+@ operation (Add a b) = 6
+
+@ isZero Const = Const
+@ isZero 0 = 1
+@ isZero a = 0
+
+@ equal Const Const = Const
+@ equal a b = isZero (sub a b)
+
+@ id Function = Function
 @ id a = a
 
-@ lul x = List x 0
+@ Tuple Symbol Symbol = Symbol
+@ Tuple a b = a
 
-@ head (List x xs) = x
+@ tCreate Symbol Symbol = Function
+@ tCreate a b = Tuple a b
 
-@ tail (List x xs) = xs
+@ headThird Function = Symbol
+@ headThird (List a (List b (List c d))) = c
 
-@ main = head (lul 1)
+@ fst Function = Symbol
+@ fst (Tuple a b) = a
+
+@ snd Function = Symbol
+@ snd (Tuple a b) = b
+
+@ map Symbol Function = Function
+@ map f (List x 0) = List (f x) 0
+@ map f (List x xs) = List (f x) (map f xs)
+
+@ main = Symbol
+@ main = mul 10 20

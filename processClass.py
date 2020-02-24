@@ -1,6 +1,6 @@
 from exprClass import Expr
 from utils import error
-from funcClass import Func
+from Definition import Define
 from parser import parse
 import re
 
@@ -11,7 +11,7 @@ class DefFunc:
         self.globalCounter = 0
         self.context = context
 
-    def indexGen(self):
+    def index_gen(self):
         index = 'i' + str(self.globalCounter)
         self.globalCounter += 1
         return index
@@ -35,7 +35,7 @@ class DefFunc:
     def define(self, key: str, args: [[str]], res: [str], buildIn=False, buildInFunc=None):
         argsExpr = [[self.context[arg] for arg in argsList] for argsList in args]
         resExpr = [self.context[r] for r in res]
-        func = Func(argsExpr, resExpr, buildIn, buildInFunc, key)
+        func = Define(argsExpr, resExpr, buildIn, buildInFunc, key)
         self.context[key] = func
 
     def eval(self, key: str, args: [str] = []):
@@ -45,7 +45,7 @@ class DefFunc:
 
     def constOrSymbol(self, val: str):
         match = re.match('[-+]?[\d]+', val)
-        index = self.indexGen()
+        index = self.index_gen()
         if match:
             self.const(index, int(val))
         else:
@@ -74,7 +74,7 @@ class DefFunc:
                     index = self.constOrSymbol(block)
                     blockOut.append(index)
             else:
-                index = self.indexGen()
+                index = self.index_gen()
                 nameOfFunc = blockText[0]
                 argsIndexes = [self.blockToIndex([block], localArgsDict)[0] for block in blockText[1:]]
                 self.func(index, nameOfFunc, argsIndexes)
@@ -89,11 +89,6 @@ class DefFunc:
         for name in functions:
             body = functions[name]
             argsTextList = body.args
-            # if argsTextList == [[]]:
-            #     blockTextList = body.block
-            #     blocksOut = self.blockToIndex(blockTextList, localArgsDict)
-            #     self.symbol(name, blocksOut[0])
-            # else:
             argsOut = []
             localArgsDict = {}
             for argsText in argsTextList:

@@ -1,6 +1,6 @@
 from exprClass import Expr
 from argsClass import Args
-from funcClass import Func
+from Definition import Define
 from processClass import DefFunc
 import sys
 

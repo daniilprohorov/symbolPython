@@ -75,14 +75,14 @@ class Expr:
                 elif arg in context:
                     fromContext = context[arg]
                     # local import
-                    from funcClass import Func
+                    from Definition import Define
 
                     if isinstance(fromContext, Expr):
                         if fromContext.funcKey and fromContext.funcKey[0].isupper():
                             evaluated = fromContext
                         else:
                             evaluated = fromContext.eval(context, argsDict, argsValues)
-                    elif isinstance(fromContext, Func):
+                    elif isinstance(fromContext, Define):
                         # evaluated = fromContext.eval(argsValues, self.process)
                         # evaluated = fromContext
                         evaluated = argsValues[fromContext].eval(context, argsDict, argsValues)
