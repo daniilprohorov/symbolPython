@@ -3,6 +3,7 @@ class Const:
     def __init__(self, val):
         self.val = val
         self.type = 'Const'
+        self.local_context = {}
 
     def eval(self, process):
         return self
@@ -22,10 +23,15 @@ class Symbol:
     def __init__(self, pointer):
         self.pointer = pointer
         self.type = 'Symbol'
+        self.local_context = {}
 
     def eval(self, process):
-        result = process.context[self.pointer]
+        if self.pointer in self.local_context:
+            result = self.local_context[self.pointer]
+        else:
+            result = process.context[self.pointer]
 
+        # result.local_context.update(self.local_context)
         old_expr = result
         new_expr = None
         while old_expr.type == 'Symbol' or old_expr.type == 'Function' and old_expr.name[0].islower():
@@ -53,9 +59,16 @@ class Function:
         self.name = name
         self.args = args
         self.type = 'Function'
+        self.local_context = {}
 
     def eval(self, process):
         if self.name[0].isupper():
+            for arg_label in self.args:
+                if arg_label in self.local_context:
+                    arg_expr = self.local_context[arg_label]
+                else:
+                    arg_expr = process.context[arg_label]
+                arg_expr.local_context.update(self.local_context)
             # args = [process.context[arg] for arg in self.args]
             # func_args = [arg.eval(process) for arg in args]
             # new_args_labels = []
@@ -66,8 +79,21 @@ class Function:
             #
             return self
         else:
-            func = process.context[self.name]
-            func_args = [process.context[arg] for arg in self.args]
+            if self.name in self.local_context:
+                func = self.local_context[self.name]
+            else:
+                func = process.context[self.name]
+            func_args = []
+            for arg in self.args:
+                if arg in self.local_context:
+                    expr = self.local_context[arg]
+                    expr.local_context.update(self.local_context)
+                    func_args.append(expr)
+                else:
+                    expr = process.context[arg]
+                    expr.local_context.update(self.local_context)
+                    func_args.append(expr)
+
             res = func.eval(func_args, process)
             return res
 

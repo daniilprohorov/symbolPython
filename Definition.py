@@ -19,20 +19,22 @@ class Define:
         self.build_in_func = func
         self.label = label
         self.type = 'Def'
+        self.local_context = {}
 
     # [String] -> Process -> Expr
     def eval(self, args_values, process):
         new_args = self.args_eval(args_values, self.types[:-1], process)
-        matched, block = self.pattern_match(new_args, process)
+        matched, block, local_context = self.pattern_match(new_args, process)
         if matched:
             if self.build_in:
                 return self.build_in_func(*new_args)
             else:
-                if block.type == self.types[-1] == 'Function' and block.name[0].isupper():
-                    return block
-                else:
-                    result = block.eval(process)
-                    return result
+                block.local_context.update(local_context)
+                # if block.type == self.types[-1] == 'Function' and block.name[0].isupper():
+                #     return block
+                # else:
+                result = block.eval(process)
+                return result
 
         else:
             print('PROBLEM!! NOT ENOUGH VARIANTS IN PATTERN MATCHING')
@@ -94,11 +96,10 @@ class Define:
                 matched_block = block_p
                 break
         if matched:
-            context = {key: expr for key, expr in big_context_list}
-            process.context.update(context)
-            return True, matched_block
+            local_context = {key: expr for key, expr in big_context_list}
+            return True, matched_block, local_context
         else:
-            return False, None
+            return False, None, local_context
 
     def match(self, expr_p, expr, process):
         if expr_p.type == 'Const':

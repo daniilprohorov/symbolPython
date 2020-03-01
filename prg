@@ -28,7 +28,7 @@
 @ lol a l = List a l
 
 @ listCreate Symbol = Function
-@ listCreate a = List a 0
+@ listCreate a = List a (List 0 0)
 
 
 @ prepend Symbol Symbol = Function
@@ -68,8 +68,13 @@
 @ snd (Tuple a b) = b
 
 @ map Symbol Function = Function
-@ map f (List x 0) = List (f x) 0
+@ map f (List 0 0) = List 0 0
 @ map f (List x xs) = List (f x) (map f xs)
 
+@ filter Symbol Function = Function
+@ filter f (List 0 0) = List 0 0
+@ filter f (List x xs) = if (f x) (List x (filter f xs)) (List 8 (filter f xs))
+
+
 @ main = Symbol
-@ main = mul 10 20
+@ main = filter isZero (prepend 0 (prepend 1 (listCreate 0)))
