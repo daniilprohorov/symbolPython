@@ -104,7 +104,7 @@ class Function:
 
     # Expr -> (Bool, [(Bool, Expr)])
     def match(self, pattern):
-        if pattern.type == self.type and self.name == pattern.name:
+        if pattern.type == self.type and self.name == pattern.name and len(self.args) == len(pattern.args):
             local_context = [(local_arg, Symbol(pattern_arg)) for local_arg, pattern_arg in
                              zip(self.args, pattern.args)]
             return True, local_context

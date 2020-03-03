@@ -47,7 +47,8 @@ class Define:
         new_args = []
         for arg, typ in zip(args, types):
             old_arg = arg
-            while old_arg.type != typ and typ != 'Symbol':
+            while old_arg.type != typ and typ != 'Symbol' and old_arg.type != 'Const':
+            # while old_arg.type != typ and typ != 'Symbol':
                 new_arg = old_arg.eval(process)
                 # if new_arg.type == 'Const':
                 #     old_arg = new_arg

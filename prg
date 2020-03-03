@@ -77,19 +77,33 @@
 @ len (List x xs) = add 1 (len xs)
 
 @ transform Function = Function
-@ transform (Mul (Add a b) (Add c d)) = transform (Add (Add (Mul a c) (Mul a d)) (Add (Mul b c) (Mul b d)))
 @ transform (Mul 0 x) = 0
 @ transform (Mul x 0) = 0
 @ transform (Mul 1 x) = transform x
 @ transform (Mul x 1) = transform x
 @ transform (Add 0 x) = transform x
 @ transform (Add x 0) = transform x
-@ transform (Mul a (Add b c)) = transform (Add (Mul a b) (Mul a c))
-@ transform (Mul (Add b c) a) = transform (Add (Mul a b) (Mul a c))
-@ transform (Mul a b) = Mul (transform a) (transform b)
-@ transform (Add a b) = Add (transform a) (transform b)
+@ transform (Pow 0 x) = 1
+@ transform (Pow 1 x) = transform x
+@ transform (Pow n x) = transform (Mul x (transform (Pow (sub n 1) x )))
+@ transform (Mul a (Add b c)) = transform (Add (transform (Mul a b)) (transform (Mul a c)))
+@ transform (Mul (Add b c) a) = transform (Add (transform (Mul a b)) (transform (Mul a c)))
+@ transform (Mul (Add a b) (Add c d)) =
+    transform
+        ( Add
+        ( transform
+            ( Add
+            ( transform
+                ( Mul (transform a) (transform c) ))
+            ( transform
+                ( Mul (transform a) (transform d)))))
+        ( transform
+            ( Add
+            ( transform
+                ( Mul (transform b) (transform c) ))
+            ( transform
+                ( Mul (transform b) (transform d))))))
 @ transform x = x
 
-
 @ main = Symbol
-@ main = A 1
+@ main = transform (Pow 3 (Add 3 4))
