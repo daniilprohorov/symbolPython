@@ -1,4 +1,6 @@
 from utils import error
+
+
 class Const:
     def __init__(self, val):
         self.val = val
@@ -30,12 +32,13 @@ class Symbol:
             result = self.local_context[self.pointer]
         else:
             result = process.context[self.pointer]
-
-        # result.local_context.update(self.local_context)
+        # self.local_context[self.pointer] = result
+        result.local_context.update(self.local_context)
         old_expr = result
         new_expr = None
         while old_expr.type == 'Symbol' or old_expr.type == 'Function' and old_expr.name[0].islower():
             new_expr = old_expr.eval(process)
+            new_expr.local_context.update(old_expr.local_context)
             if equal(new_expr, old_expr):
                 error("Cant match eval symbol")
             else:
@@ -69,6 +72,7 @@ class Function:
                 else:
                     arg_expr = process.context[arg_label]
                 arg_expr.local_context.update(self.local_context)
+                # arg_expr.eval(process)
             # args = [process.context[arg] for arg in self.args]
             # func_args = [arg.eval(process) for arg in args]
             # new_args_labels = []
@@ -95,12 +99,14 @@ class Function:
                     func_args.append(expr)
 
             res = func.eval(func_args, process)
+            res.local_context.update(self.local_context)
             return res
 
     # Expr -> (Bool, [(Bool, Expr)])
     def match(self, pattern):
         if pattern.type == self.type and self.name == pattern.name:
-            local_context = [(local_arg, Symbol(pattern_arg)) for local_arg, pattern_arg in zip(self.args, pattern.args)]
+            local_context = [(local_arg, Symbol(pattern_arg)) for local_arg, pattern_arg in
+                             zip(self.args, pattern.args)]
             return True, local_context
         else:
             return False, []

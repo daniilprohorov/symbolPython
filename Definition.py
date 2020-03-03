@@ -49,7 +49,12 @@ class Define:
             old_arg = arg
             while old_arg.type != typ and typ != 'Symbol':
                 new_arg = old_arg.eval(process)
+                # if new_arg.type == 'Const':
+                #     old_arg = new_arg
+                #     break
                 if equal(new_arg, old_arg):
+                    # old_arg = new_arg
+                    # break
                     error("Cant evaluate")
                 else:
                     old_arg = new_arg
@@ -97,6 +102,7 @@ class Define:
                 break
         if matched:
             local_context = {key: expr for key, expr in big_context_list}
+            process.context.update(local_context)
             return True, matched_block, local_context
         else:
             return False, None, local_context
@@ -155,6 +161,15 @@ class Define:
                 for arg, m_arg in zip(args_expr, matched_args):
                     m_list.append(self.match(arg, m_arg, process))
                 if all([m for m, dict_m in m_list]):
+                    # out = []
+                    # for dict_m in m_list:
+                    #     for pair in dict_m[1]:
+                    #         f = pair[0]
+                    #         pair[1].local_context.update(local_context)
+                    #         s = pair[1].eval(process)
+                    #         s.local_context.update(local_context)
+                    #         out.append((f, s))
+                    # return True, out
                     return True, [(pair[0], pair[1].eval(process)) for dict_m in m_list for pair in dict_m[1]]
                 else:
                     return False, []

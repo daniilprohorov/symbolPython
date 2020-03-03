@@ -9,9 +9,6 @@
 @ if 1 a b = a
 @ if 0 a b = b
 
-@ List Symbol Symbol = Symbol
-@ List a b = a
-
 @ Mul Symbol Symbol = Symbol
 @ Mul a b = a
 
@@ -71,10 +68,28 @@
 @ map f (List 0 0) = List 0 0
 @ map f (List x xs) = List (f x) (map f xs)
 
-@ filter Symbol Function = Function
-@ filter f (List 0 0) = List 0 0
-@ filter f (List x xs) = if (f x) (List x (filter f xs)) (List 8 (filter f xs))
+@ mapNeg Function = Function
+@ mapNeg (List 0 0) = List 0 0
+@ mapNeg (List x xs) = List (neg x) (mapNeg xs)
+
+@ len Function Const = Const
+@ len (List 0 0) = 0
+@ len (List x xs) = add 1 (len xs)
+
+@ transform Function = Function
+@ transform (Mul (Add a b) (Add c d)) = transform (Add (Add (Mul a c) (Mul a d)) (Add (Mul b c) (Mul b d)))
+@ transform (Mul 0 x) = 0
+@ transform (Mul x 0) = 0
+@ transform (Mul 1 x) = transform x
+@ transform (Mul x 1) = transform x
+@ transform (Add 0 x) = transform x
+@ transform (Add x 0) = transform x
+@ transform (Mul a (Add b c)) = transform (Add (Mul a b) (Mul a c))
+@ transform (Mul (Add b c) a) = transform (Add (Mul a b) (Mul a c))
+@ transform (Mul a b) = Mul (transform a) (transform b)
+@ transform (Add a b) = Add (transform a) (transform b)
+@ transform x = x
 
 
 @ main = Symbol
-@ main = filter isZero (prepend 0 (prepend 1 (listCreate 0)))
+@ main = A 1
