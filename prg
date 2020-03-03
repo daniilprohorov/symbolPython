@@ -84,7 +84,8 @@
 @ transform (Add 0 x) = transform x
 @ transform (Add x 0) = transform x
 @ transform (Pow 0 x) = 1
-@ transform (Pow n x) = transformPow n x
+@ transform (Pow 1 x) = transform x
+@ transform (Pow n x) = transform (Mul x (transform (Pow (sub n 1) x )))
 @ transform (Mul a (Add b c)) = transform (Add (transform (Mul a b)) (transform (Mul a c)))
 @ transform (Mul (Add b c) a) = transform (Add (transform (Mul a b)) (transform (Mul a c)))
 @ transform (Mul (Add a b) (Add c d)) =
@@ -104,16 +105,5 @@
                 ( Mul (transform b) (transform d))))))
 @ transform x = x
 
-
-@ transformPow Const Function = Function
-@ transformPow 1 x = x
-@ transformPow n x = Mul x (transformPow (sub n 1) x)
-
-
-@ eval Function = Const
-@ eval (Add a b) = add (eval a) (eval b)
-@ eval (Mul a b) = mul (eval a) (eval b)
-@ eval x = x
-
 @ main = Symbol
-@ main = transform ( Mul (Add (A 1) (B 1)) (C 2))
+@ main = transform (Pow 3 (Add 3 4))
