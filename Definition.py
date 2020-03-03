@@ -54,9 +54,9 @@ class Define:
                 #     old_arg = new_arg
                 #     break
                 if equal(new_arg, old_arg):
-                    # old_arg = new_arg
-                    # break
-                    error("Cant evaluate")
+                    old_arg = new_arg
+                    break
+                    # error("Cant evaluate")
                 else:
                     old_arg = new_arg
             new_args.append(old_arg)

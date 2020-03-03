@@ -72,7 +72,7 @@ class Function:
                 else:
                     arg_expr = process.context[arg_label]
                 arg_expr.local_context.update(self.local_context)
-                # arg_expr.eval(process)
+                arg_expr.eval(process)
             # args = [process.context[arg] for arg in self.args]
             # func_args = [arg.eval(process) for arg in args]
             # new_args_labels = []
