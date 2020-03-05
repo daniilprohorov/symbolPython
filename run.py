@@ -1,3 +1,4 @@
+import re
 from Process import Process
 from Expr import Const, Symbol, Function
 import sys
@@ -61,5 +62,16 @@ p.define("equalBuildInConst", [["a3", "b3"]], ["fake"], True, equalBuildInConst_
 p.define("equalBuildInSymbol", [["a4", "b4"]], ["fake"], True, equalBuildInSymbol_func, ['Symbol', 'Symbol', 'Const'])
 
 p.text_define()
-result = p.eval('main')
-print(result.to_str(p))
+
+filename = "prg"
+lastLine = ""
+def getLastLine():
+    with open(filename, "r") as f:
+        lns = [line for line in f]
+        return lns[-2]
+lastLine = getLastLine()
+if re.search(r'tryTransform', lastLine):
+    print("kek")
+else:
+    result = p.eval('main')
+    print(result.to_str(p))

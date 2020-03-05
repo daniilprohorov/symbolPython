@@ -229,5 +229,5 @@
 @ eval expr = deleteDuplicates (sameConcat (smm (toFlat (tryTransform 10 expr))))
 
 @ main = Symbol
-@ main = eval ()
+@ main = tryTransform 10 (Add 3 4)
 
