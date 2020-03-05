@@ -61,7 +61,6 @@ p.define("neg", [["a2"]], ["fake"], True, neg_func, ['Const', 'Const'])
 p.define("equalBuildInConst", [["a3", "b3"]], ["fake"], True, equalBuildInConst_func, ['Const', 'Const', 'Const'])
 p.define("equalBuildInSymbol", [["a4", "b4"]], ["fake"], True, equalBuildInSymbol_func, ['Symbol', 'Symbol', 'Const'])
 
-p.text_define()
 
 filename = "prg"
 lastLine = ""
@@ -73,5 +72,6 @@ lastLine = getLastLine()
 if re.search(r'tryTransform', lastLine):
     print("kek")
 else:
+    p.text_define()
     result = p.eval('main')
     print(result.to_str(p))
