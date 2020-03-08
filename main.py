@@ -1,9 +1,20 @@
 from Process import Process
+
 from Expr import Const, Symbol, Function
 import sys
 sys.setrecursionlimit(10000)
 
 p = Process()
+
+def printPoints_func(lst):
+    x_lst = [x for y1, y2, x in lst]
+    y1_lst = [y1 for y1, y2, x in lst]
+    y2_lst = [y2 for y1, y2, x in lst]
+    print(y1_lst)
+    print(y2_lst)
+    plt.plot(x_lst, y1_lst)
+    plt.plot(x_lst, y2_lst)
+    plt.show()
 
 def add_func(x, y):
     xv = x.val

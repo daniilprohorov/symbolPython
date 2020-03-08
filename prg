@@ -228,6 +228,24 @@
 @ eval Function = Function
 @ eval expr = deleteDuplicates (sameConcat (smm (toFlat (tryTransform 10 expr))))
 
+@ evalExpr Function Function Function Const Const Const = Function
+@ evalExpr expr1 expr2 s x1 x2 h = if (equal x1 x2)
+    listCreate (Tuple (getVal (ev expr1 s (Val x1))) (getVal (ev expr2 s (Val x1)) (Val x1)))
+    prepend (Tuple (getVal (ev expr1 s (Val x1))) (getVal (ev expr2 s (Val x1)) (Val x1))) (evalExpr expr1 expr2 s (add x1 h) x2 h)
+
+@ subst Function Function Function = Function
+@ subst (Add a b) s v = Add (subst a s v) (subst b s v)
+@ subst (Mul a b) s v = Mul (subst a s v) (subst b s v)
+@ subst (S x) s v = if (equal (S x) s) v (S x)
+@ subst (Val a) s v = Val a
+
+@ ev Function Function Function = Function
+@ ev expr s v = evaluate ( subst (tryTransform 1 expr) s v )
+
+@ print Function Function Function Const Const Const = Function
+@ print expr1 expr2 s x1 x2 h = printPoints (evalExpr expr1 expr2 s x1 x2 h)
+
+
 @ main = Symbol
-@ main = tryTransform 10 (Add "a")
+@ main = print ((Pow (Val 2) (S "a")), (Pow (Val 2) (S "a")), (S "a"), (-10), 10, 1)
 
